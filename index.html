@@ -1,112 +1,673 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>LearninGo — Full Database ERD</title>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learnin-Go · ERD</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:          #0d1117;
-    --surface:     #161b22;
-    --border:      #30363d;
-    --text:        #c9d1d9;
-    --text-muted:  #8b949e;
-    --sidebar-w:   260px;
-    --zA-h:#1d4ed8; --zA-b:#0f2044; --zA-t:#93c5fd;
-    --zB-h:#059669; --zB-b:#052e1c; --zB-t:#6ee7b7;
-    --zC-h:#7c3aed; --zC-b:#2e1065; --zC-t:#c4b5fd;
-    --zD-h:#b45309; --zD-b:#2d1b00; --zD-t:#fcd34d;
-    --zE-h:#0891b2; --zE-b:#082f3e; --zE-t:#67e8f9;
-    --zF-h:#be185d; --zF-b:#3b0d24; --zF-t:#f9a8d4;
-    --zG-h:#374151; --zG-b:#111827; --zG-t:#9ca3af;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-  header { flex-shrink: 0; background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; gap: 16px; z-index: 10; }
-  header h1 { font-size: 16px; font-weight: 600; color: #e6edf3; letter-spacing: .3px; }
-  header .meta { font-size: 12px; color: var(--text-muted); }
-  header .badge { background: #21262d; border: 1px solid var(--border); border-radius: 20px; padding: 2px 10px; font-size: 11px; color: var(--text-muted); }
-  .spacer { flex: 1; }
-  .ctrl-btn { background: #21262d; border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 5px 11px; font-size: 12px; cursor: pointer; transition: background .15s; }
-  .ctrl-btn:hover { background: #30363d; }
-  .layout { flex: 1; display: flex; overflow: hidden; }
-  aside { width: var(--sidebar-w); flex-shrink: 0; background: var(--surface); border-right: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; }
-  .sidebar-header { padding: 14px 16px 10px; font-size: 11px; font-weight: 600; letter-spacing: .8px; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
-  .zone-section { border-bottom: 1px solid var(--border); }
-  .zone-header { display: flex; align-items: center; gap: 8px; padding: 9px 14px; cursor: pointer; transition: background .12s; user-select: none; }
-  .zone-header:hover { background: #21262d; }
-  .zone-header.active { background: #161b22; }
-  .zone-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-  .zone-name { font-size: 12px; font-weight: 500; flex: 1; }
-  .zone-count { font-size: 11px; color: var(--text-muted); background: #21262d; border-radius: 10px; padding: 1px 7px; }
-  .zone-tables { display: none; padding: 4px 14px 8px 30px; flex-direction: column; gap: 3px; }
-  .zone-tables.open { display: flex; }
-  .table-item { font-size: 11px; color: var(--text-muted); padding: 3px 6px; border-radius: 4px; cursor: pointer; font-family: 'Courier New', monospace; transition: all .12s; }
-  .table-item:hover { background: #21262d; color: var(--text); }
-  .table-item.highlighted { background: #1f3a5f; color: #93c5fd; }
-  .sidebar-footer { margin-top: auto; padding: 12px 14px; font-size: 10px; color: #444d56; border-top: 1px solid var(--border); }
-  .diagram-wrap { flex: 1; overflow: auto; position: relative; background: var(--bg); }
-  #diagram-container { padding: 32px; min-width: max-content; transform-origin: top left; transition: transform .1s; }
-  .mermaid svg { background: var(--bg) !important; border-radius: 8px; }
-  .legend-bar { flex-shrink: 0; background: var(--surface); border-top: 1px solid var(--border); padding: 8px 20px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
-  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); cursor: pointer; transition: color .12s; }
-  .legend-item:hover, .legend-item.active { color: var(--text); }
-  .legend-pip { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-  .zone-A-entity .entityBox { fill: var(--zA-b) !important; stroke: var(--zA-h) !important; }
-  .zone-A-entity .entityLabel { fill: var(--zA-t) !important; }
-  .zone-B-entity .entityBox { fill: var(--zB-b) !important; stroke: var(--zB-h) !important; }
-  .zone-B-entity .entityLabel { fill: var(--zB-t) !important; }
-  .zone-C-entity .entityBox { fill: var(--zC-b) !important; stroke: var(--zC-h) !important; }
-  .zone-C-entity .entityLabel { fill: var(--zC-t) !important; }
-  .zone-D-entity .entityBox { fill: var(--zD-b) !important; stroke: var(--zD-h) !important; }
-  .zone-D-entity .entityLabel { fill: var(--zD-t) !important; }
-  .zone-E-entity .entityBox { fill: var(--zE-b) !important; stroke: var(--zE-h) !important; }
-  .zone-E-entity .entityLabel { fill: var(--zE-t) !important; }
-  .zone-F-entity .entityBox { fill: var(--zF-b) !important; stroke: var(--zF-h) !important; }
-  .zone-F-entity .entityLabel { fill: var(--zF-t) !important; }
-  .zone-G-entity .entityBox { fill: var(--zG-b) !important; stroke: var(--zG-h) !important; }
-  .zone-G-entity .entityLabel { fill: var(--zG-t) !important; }
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090f; --s1:rgba(255,255,255,0.04); --s2:rgba(255,255,255,0.07); --s3:rgba(255,255,255,0.13);
+  --border:rgba(255,255,255,0.08); --border2:rgba(255,255,255,0.18);
+  --text:#dde2f0; --dim:rgba(221,226,240,0.5); --muted:rgba(221,226,240,0.3);
+  --accent:#4f7ef8; --accent-g:rgba(79,126,248,0.2); --purple:#9b6ff7;
+  --green:#3ecf8e; --yellow:#f5c842; --sw:300px; --hh:58px;
+}
+html,body{height:100%;overflow:hidden;font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text)}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E")}
+.g1,.g2,.g3{position:fixed;border-radius:50%;filter:blur(130px);pointer-events:none;z-index:0}
+.g1{top:-20%;right:-10%;width:60vw;height:60vw;background:radial-gradient(circle,rgba(79,126,248,.10) 0%,transparent 70%)}
+.g2{bottom:-15%;left:-10%;width:50vw;height:50vw;background:radial-gradient(circle,rgba(155,111,247,.08) 0%,transparent 70%)}
+.g3{top:30%;left:20%;width:35vw;height:35vw;background:radial-gradient(circle,rgba(34,211,238,.05) 0%,transparent 70%)}
+#app{position:relative;z-index:1;display:grid;grid-template-rows:var(--hh) 1fr;grid-template-columns:var(--sw) 1fr;height:100vh}
+header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 20px;
+  border-bottom:1px solid var(--border);background:rgba(7,9,15,.9);backdrop-filter:blur(20px);z-index:30}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-ico{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-name{font-size:.93rem;font-weight:800;letter-spacing:-.02em;background:linear-gradient(90deg,var(--text),var(--dim));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.brand-tag{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.hpills{display:flex;gap:6px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:5px;background:var(--s2);border:1px solid var(--border);padding:3px 9px;border-radius:20px;font-size:.67rem;color:var(--dim)}
+.pdot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 5px var(--green);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+#menu-toggle{display:none;background:var(--s2);border:1px solid var(--border);border-radius:8px;
+  padding:7px 10px;color:var(--text);cursor:pointer;gap:6px;align-items:center;font-family:'Heebo',sans-serif;
+  font-size:.78rem;font-weight:600}
+#menu-toggle svg{flex-shrink:0}
+aside{border-left:1px solid var(--border);background:rgba(7,9,15,.72);backdrop-filter:blur(20px);
+  display:flex;flex-direction:column;overflow:hidden;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.s-top{padding:14px 14px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.s-lbl{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.sw{position:relative}
+.sw svg{position:absolute;right:9px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+#si{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:7px 32px 7px 10px;
+  font-family:'Heebo',sans-serif;font-size:.78rem;color:var(--text);outline:none;
+  transition:border-color .2s,box-shadow .2s;direction:rtl}
+#si::placeholder{color:var(--muted)}
+#si:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-g)}
+#el-wrap{flex:1;overflow-y:auto;padding:6px}
+#el-wrap::-webkit-scrollbar{width:3px}
+#el-wrap::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.egroup{margin-bottom:2px}
+.egroup-lbl{font-size:.57rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 8px 3px}
+.ebtn{width:100%;display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;border:1px solid transparent;
+  background:transparent;color:var(--dim);font-family:'Heebo',sans-serif;font-size:.75rem;font-weight:500;
+  cursor:pointer;text-align:right;transition:all .12s;direction:rtl}
+.ebtn:hover{background:var(--s2);border-color:var(--border);color:var(--text)}
+.ebtn.active{background:var(--accent-g);border-color:rgba(79,126,248,.35);color:#b0c6ff}
+.edot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ecnt{margin-right:auto;font-size:.58rem;color:var(--muted);background:var(--s1);border:1px solid var(--border);
+  padding:1px 5px;border-radius:8px;font-family:'IBM Plex Mono',monospace}
+.no-res{padding:20px;text-align:center;color:var(--muted);font-size:.75rem}
+.hidden{display:none!important}
+#main{display:flex;flex-direction:column;overflow:hidden;position:relative}
+#toolbar{position:absolute;top:14px;left:14px;z-index:20;display:flex;gap:3px;
+  background:rgba(7,9,15,.92);backdrop-filter:blur(14px);border:1px solid var(--border2);
+  border-radius:8px;padding:3px}
+.tbtn{background:transparent;border:none;width:28px;height:28px;display:flex;align-items:center;
+  justify-content:center;border-radius:5px;color:var(--dim);cursor:pointer;transition:all .12s}
+.tbtn:hover{background:var(--s3);color:var(--text)}
+.tsep{width:1px;background:var(--border);margin:4px 1px}
+#zlbl{position:absolute;top:14px;left:136px;z-index:20;background:rgba(7,9,15,.92);backdrop-filter:blur(14px);
+  border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:.67rem;
+  font-family:'IBM Plex Mono',monospace;color:var(--dim);min-width:52px;text-align:center}
+#mob-zoom{display:none;position:absolute;bottom:24px;right:20px;z-index:25;flex-direction:column;gap:8px}
+.mzb{width:46px;height:46px;border-radius:50%;border:1px solid var(--border2);
+  background:rgba(7,9,15,.95);backdrop-filter:blur(14px);color:var(--text);
+  font-size:1.3rem;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.5);transition:background .15s,transform .1s;
+  -webkit-tap-highlight-color:transparent}
+.mzb:active{background:var(--s3);transform:scale(.93)}
+#erd-wrap{flex:1;overflow:hidden;position:relative;cursor:grab}
+#erd-wrap.dragging{cursor:grabbing}
+#erd-svg{width:100%;height:100%;display:block;shape-rendering:geometricPrecision;text-rendering:optimizeLegibility}
+#sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);
+  backdrop-filter:blur(3px);z-index:40}
+@media(max-width:768px){
+  :root{--hh:52px}
+  #app{grid-template-columns:1fr;grid-template-rows:var(--hh) 1fr}
+  aside{position:fixed;top:0;right:0;width:min(320px,90vw);height:100vh;z-index:50;
+    border-left:1px solid var(--border2);transform:translateX(100%);box-shadow:-8px 0 40px rgba(0,0,0,.6)}
+  aside.open{transform:translateX(0)}
+  #sidebar-backdrop.visible{display:block}
+  #menu-toggle{display:flex}
+  .pill-hint{display:none}
+  #toolbar{top:10px;left:10px}
+  #zlbl{top:10px;left:120px}
+  #mob-zoom{display:flex}
+  #panel.open{height:min(380px,50vh)}
+  .pbody{grid-template-columns:1fr;height:auto;overflow-y:auto;max-height:calc(min(380px,50vh) - 46px)}
+  .psec:first-child{border-left:none;border-bottom:1px solid var(--border)}
+}
+#panel{height:0;overflow:hidden;border-top:1px solid transparent;background:rgba(7,9,15,.96);backdrop-filter:blur(20px);transition:height .36s cubic-bezier(.4,0,.2,1),border-color .36s;flex-shrink:0}
+#panel.open{height:320px;border-color:var(--border)}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid var(--border);min-height:46px}
+.ph-name{display:flex;align-items:center;gap:9px}
+.ph-ico{width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center}
+.ph-title{font-size:.88rem;font-weight:700}
+.ph-desc{font-size:.68rem;color:var(--muted);margin-top:1px}
+.cbtn{background:var(--s2);border:1px solid var(--border);width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;color:var(--dim);cursor:pointer;transition:all .12s}
+.cbtn:hover{background:var(--s3);color:var(--text)}
+.pbody{display:grid;grid-template-columns:1fr 1fr;height:calc(100% - 46px);overflow:hidden}
+.psec{padding:11px 16px;overflow-y:auto}
+.psec:first-child{border-left:1px solid var(--border)}
+.psec::-webkit-scrollbar{width:3px}
+.psec::-webkit-scrollbar-thumb{background:var(--border2)}
+.sec-lbl{font-size:.57rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:7px;display:flex;align-items:center;gap:4px}
+.flist{display:flex;flex-direction:column;gap:2px}
+.frow{display:flex;align-items:center;gap:7px;padding:4px 7px;border-radius:4px;background:var(--s1);border:1px solid transparent;transition:all .1s}
+.frow:hover{background:var(--s2);border-color:var(--border)}
+.fname{font-family:'IBM Plex Mono',monospace;font-size:.69rem;color:var(--text);flex:1}
+.ftype{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--accent);background:rgba(79,126,248,.1);border:1px solid rgba(79,126,248,.15);padding:1px 5px;border-radius:3px}
+.pk-b{font-size:.54rem;font-weight:800;color:var(--yellow);background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.2);padding:1px 4px;border-radius:3px}
+.fk-b{font-size:.54rem;font-weight:700;color:var(--purple);background:rgba(155,111,247,.1);border:1px solid rgba(155,111,247,.2);padding:1px 4px;border-radius:3px}
+.rlist{display:flex;flex-direction:column;gap:3px}
+.rtag{display:flex;align-items:center;gap:6px;padding:5px 9px;border-radius:5px;background:var(--s1);border:1px solid var(--border);font-size:.71rem;color:var(--dim);transition:all .1s}
+.rtag:hover{background:var(--s2);color:var(--text)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.anim{animation:fadeUp .2s ease forwards}
 </style>
 </head>
 <body>
+<div class="g1"></div><div class="g2"></div><div class="g3"></div>
+<div id="app">
 <header>
-  <h1>LearninGo — Entity Relationship Diagram</h1>
-  <span class="meta">Full Database Schema</span>
-  <span class="badge">32 tables</span>
-  <span class="badge">7 zones</span>
-  <div class="spacer"></div>
-  <button class="ctrl-btn" onclick="resetZoom()">Fit</button>
-  <button class="ctrl-btn" onclick="zoomBy(1.2)">+</button>
-  <button class="ctrl-btn" onclick="zoomBy(0.8)">−</button>
-  <button class="ctrl-btn" id="clearBtn" onclick="clearFilter()" style="display:none">✕ Clear</button>
+  <div class="brand">
+    <div class="brand-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+    <div><div class="brand-name">Learnin-Go</div><div class="brand-tag">ארכיטקטורת נתונים · ERD</div></div>
+  </div>
+  <div class="hpills">
+    <div class="pill"><div class="pdot"></div>SVG ERD</div>
+    <div class="pill">32 טבלאות</div>
+    <div class="pill">46 קשרים</div>
+    <div class="pill pill-hint" style="font-size:.6rem;color:var(--muted)">Scroll לזום · גרור להזזה · F = fit</div>
+    <button id="menu-toggle" onclick="toggleSidebar()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      ישויות
+    </button>
+  </div>
 </header>
-<div class="layout">
-  <aside>
-    <div class="sidebar-header">Zones &amp; Tables</div>
-    <div id="zone-list"></div>
-    <div class="sidebar-footer">LearninGo · full_schema_v2.sql</div>
-  </aside>
-  <div class="diagram-wrap">
-    <div id="diagram-container">
-      <div class="mermaid" id="erd">
-erDiagram
-  profiles { uuid user_id PK string email string display_name string membership_type boolean is_onboarded string user_status }
-  user_preferences { uuid id PK uuid user_id FK array study_days string daily_duration string preferred_time string theme_mode }
-  user_roles { uuid id PK uuid user_id FK enum role }
-  user_devices { uuid id PK uuid user_id FK string device_id timestamp last_seen_at }
-  hobbies { uuid id PK string name_he string slug boolean is_active }
-  user_hobbies { uuid user_id FK uuid hobby_id FK timestamp created_at }
-  courses { uuid id PK uuid created_by_user_id FK enum status string title date exam_date string course_difficulty }
-  course_units { uuid id PK uuid course_id FK int unit_index string unit_title }
-  course_sub_units { uuid id PK uuid unit_id FK uuid course_id FK string sub_unit_index string sub_unit_title }
-  course_sources { uuid id PK uuid course_id FK uuid uploaded_by_user_id FK string file_name string file_type enum status }
-  course_knowledge_chunk { uuid id PK uuid course_id FK uuid source_id FK int chunk_index text chunk_text }
-  sub_unit_chunk_classifications { uuid id PK uuid sub_unit_id FK string chunk_id string content_type }
-  sub_unit_summaries { uuid id PK uuid sub_unit_id FK uuid course_id FK jsonb summary_json string status int retry_count }
-  sub_unit_flashcards { uuid id PK uuid sub_unit_id FK uuid course_id FK jsonb cards string status int retry_count }
-  sub_unit_quizzes { uuid id PK uuid sub_unit_id FK uuid course_id FK jsonb questions string status int retry_count }
-  unit_ex
+<aside>
+  <div class="s-top">
+    <div class="s-lbl"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>ישויות</div>
+    <div class="sw"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="si" placeholder="חיפוש טבלה..." autocomplete="off"></div>
+  </div>
+  <div id="el-wrap"><div id="el"></div><div id="nores" class="no-res hidden">לא נמצאו תוצאות</div></div>
+</aside>
+<div id="main">
+  <div id="toolbar">
+    <button class="tbtn" onclick="zi()" title="+"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/><path d="m21 21-4.35-4.35"/></svg></button>
+    <button class="tbtn" onclick="zo()" title="-"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="8" y1="11" x2="14" y2="11"/><path d="m21 21-4.35-4.35"/></svg></button>
+    <div class="tsep"></div>
+    <button class="tbtn" onclick="fitView()" title="F"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
+    <div class="tsep"></div>
+    <button class="tbtn" onclick="resetView()" title="0"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
+  </div>
+  <div id="zlbl">100%</div>
+  <div id="mob-zoom">
+    <button class="mzb" onclick="zi()" aria-label="זום אין">&#xFF0B;</button>
+    <button class="mzb" onclick="fitView()" aria-label="fit" style="font-size:.9rem">&#x26F6;</button>
+    <button class="mzb" onclick="zo()" aria-label="זום אאוט">&#xFF0D;</button>
+  </div>
+  <div id="erd-wrap" style="direction:ltr"><svg id="erd-svg" xmlns="http://www.w3.org/2000/svg" style="direction:ltr;unicode-bidi:isolate" direction="ltr"></svg></div>
+  <div id="panel">
+    <div class="ph"><div class="ph-name" id="ph-name"></div><button class="cbtn" onclick="closePanel()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="pbody" id="pbody"></div>
+  </div>
+</div>
+</div>
+<div id="sidebar-backdrop" onclick="closeSidebar()"></div>
+<script>
+// ================================================================
+// DATA
+// ================================================================
+const GROUPS = [
+  { key:'users',    label:'\uD83D\uDC64 \u05DE\u05E9\u05EA\u05DE\u05E9\u05D9\u05DD',       color:'#4f7ef8', dark:'#1a2a5e',
+    tables:['profiles','user_roles','user_devices','user_preferences','user_hobbies','hobbies'] },
+  { key:'courses',  label:'\uD83D\uDCDA \u05E7\u05D5\u05E8\u05E1\u05D9\u05DD',         color:'#3ecf8e', dark:'#0f3325',
+    tables:['courses','course_sources','course_knowledge_chunk','course_units','course_sub_units','unit_generation_locks'] },
+  { key:'learning', label:'\uD83E\uDDE0 \u05D7\u05D5\u05DE\u05E8\u05D9 \u05DC\u05DE\u05D9\u05D3\u05D4',    color:'#9b6ff7', dark:'#2a1a50',
+    tables:['sub_unit_summaries','sub_unit_flashcards','sub_unit_quizzes','sub_unit_chunk_classifications','unit_exams','final_exams','final_exam_seen_questions'] },
+  { key:'plan',     label:'\uD83D\uDCC5 \u05EA\u05DB\u05E0\u05D5\u05DF',          color:'#f5c842', dark:'#3a2e0a',
+    tables:['study_plans','study_plan_items'] },
+  { key:'progress', label:'\uD83D\uDCCA \u05D4\u05EA\u05E7\u05D3\u05DE\u05D5\u05EA',        color:'#fb923c', dark:'#3a1f0a',
+    tables:['user_course_progress','user_unit_progress','user_subunit_progress'] },
+  { key:'chat',     label:'\uD83D\uDCAC \u05E6\u05F3\u05D0\u05D8 \u05D5\u05DE\u05E9\u05D5\u05D1',     color:'#f472b6', dark:'#3a0f25',
+    tables:['chat_threads','chat_messages','user_feedback','learning_interactions','error_reports'] },
+  { key:'ai',       label:'\uD83E\uDD16 AI \u05D5\u05DE\u05E2\u05E8\u05DB\u05EA',      color:'#22d3ee', dark:'#052530',
+    tables:['prompt_templates','prompt_runs','system_logs'] }
+];
+ 
+const SCHEMA = {
+  profiles:{
+    he:'\u05E4\u05E8\u05D5\u05E4\u05D9\u05DC\u05D9 \u05DE\u05E9\u05EA\u05DE\u05E9\u05D9\u05DD',desc:'\u05D8\u05D1\u05DC\u05EA \u05D4\u05D1\u05E1\u05D9\u05E1 \u05DC\u05DB\u05DC \u05DE\u05E9\u05EA\u05DE\u05E9 \u2014 \u05D2\u05D9\u05E9\u05D4, \u05E4\u05E8\u05D8\u05D9\u05DD \u05D5\u05E1\u05D8\u05D0\u05D8\u05D5\u05E1.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:true},{n:'display_name',t:'text'},{n:'email',t:'text'},
+            {n:'membership_type',t:'text'},{n:'user_status',t:'text'},{n:'is_onboarded',t:'bool'},
+            {n:'stripe_customer_id',t:'text'},{n:'avatar_url',t:'text'},{n:'created_at',t:'timestamp'}],
+    rels:['1:1 \u2014 user_preferences','1:N \u2014 user_roles','1:N \u2014 user_devices','1:N \u2014 courses','1:N \u2014 progress, chats, feedback']},
+  user_roles:{
+    he:'\u05EA\u05E4\u05E7\u05D9\u05D3\u05D9 \u05DE\u05E9\u05EA\u05DE\u05E9',desc:'\u05EA\u05E4\u05E7\u05D9\u05D3 \u05DB\u05DC \u05DE\u05E9\u05EA\u05DE\u05E9 \u05D1\u05DE\u05E2\u05E8\u05DB\u05EA \u2014 ADMIN \u05D0\u05D5 USER.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:true},{n:'role',t:'app_role'}],
+    rels:['N:1 \u2014 profiles']},
+  user_devices:{
+    he:'\u05DE\u05DB\u05E9\u05D9\u05E8\u05D9 \u05DE\u05E9\u05EA\u05DE\u05E9',desc:'\u05DE\u05DB\u05E9\u05D9\u05E8\u05D9\u05DD \u05E8\u05E9\u05D5\u05DE\u05D9\u05DD \u05DC\u05DE\u05E9\u05EA\u05DE\u05E9 \u05DC\u05E6\u05D5\u05E8\u05DA \u05DE\u05E2\u05E7\u05D1 \u05D5\u05E1\u05E9\u05DF.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:true},{n:'device_id',t:'text'},
+            {n:'user_agent',t:'text'},{n:'last_seen_at',t:'timestamp'},{n:'created_at',t:'timestamp'}],
+    rels:['N:1 \u2014 profiles']},
+  user_preferences:{
+    he:'\u05D4\u05E2\u05D3\u05E4\u05D5\u05EA \u05DC\u05DE\u05D9\u05D3\u05D4',desc:'\u05E9\u05E2\u05D5\u05EA, \u05EA\u05D3\u05E8, \u05E1\u05D5\u05D2\u05D9 \u05EA\u05D5\u05DB\u05DF \u05D5\u05E0\u05D7\u05D9\u05D5\u05EA AI.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:true},{n:'study_days',t:'text[]'},
+            {n:'daily_duration',t:'text'},{n:'preferred_time',t:'text'},{n:'content_types',t:'text[]'},
+            {n:'ai_instructions',t:'text'},{n:'theme_mode',t:'text'},{n:'language_code',t:'text'}],
+    rels:['1:1 \u2014 profiles']},
+  hobbies:{
+    he:'\u05EA\u05D7\u05D1\u05D9\u05D1\u05D9\u05DD',desc:'\u05E8\u05E9\u05D9\u05DE\u05EA \u05EA\u05D7\u05D1\u05D9\u05D1\u05D9\u05DD \u05DE\u05D5\u05D1\u05E0\u05D9\u05DD \u05D5\u05DE\u05D5\u05EA\u05D0\u05DE\u05D9\u05DD \u05D0\u05D9\u05E9\u05D9\u05EA.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'name_he',t:'text'},{n:'slug',t:'text'},
+            {n:'is_custom',t:'bool'},{n:'is_active',t:'bool'},{n:'sort_order',t:'int'}],
+    rels:['1:N \u2014 user_hobbies']},
+  user_hobbies:{
+    he:'\u05EA\u05D7\u05D1\u05D9\u05D1\u05D9 \u05DE\u05E9\u05EA\u05DE\u05E9',desc:'\u05D8\u05D1\u05DC\u05EA \u05D2\u05D9\u05E9\u05D5\u05E8 M:N \u05D1\u05D9\u05DF \u05DE\u05E9\u05EA\u05DE\u05E9\u05D9\u05DD \u05DC\u05EA\u05D7\u05D1\u05D9\u05D1\u05D9\u05DD.',
+    fields:[{n:'user_id',t:'uuid',pk:true},{n:'hobby_id',t:'uuid',pk:true},{n:'created_at',t:'timestamp'}],
+    rels:['N:1 \u2014 profiles','N:1 \u2014 hobbies']},
+  courses:{
+    he:'\u05E7\u05D5\u05E8\u05E1\u05D9\u05DD',desc:'Root \u2014 \u05E7\u05D5\u05E8\u05E1 \u05E9\u05DC\u05DD \u05E2\u05DD \u05DE\u05D8\u05E8\u05D4, \u05E8\u05DE\u05D4 \u05D5\u05EA\u05D0\u05E8\u05D9\u05DA \u05DE\u05D1\u05D7\u05DF.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'created_by_user_id',t:'uuid',fk:true},{n:'title',t:'text'},
+            {n:'description',t:'text'},{n:'status',t:'text'},{n:'course_difficulty',t:'text'},
+            {n:'course_goal',t:'text'},{n:'exam_date',t:'date'},{n:'generation_status',t:'text'},
+            {n:'created_at',t:'timestamp'},{n:'updated_at',t:'timestamp'}],
+    rels:['N:1 \u2014 profiles','1:N \u2014 units, sources, exams','1:1 \u2014 study_plans','1:N \u2014 prompt_runs','1:N \u2014 system_logs']},
+  course_sources:{
+    he:'\u05DE\u05E7\u05D5\u05E8\u05D5\u05EA \u05E7\u05D5\u05E8\u05E1',desc:'\u05E7\u05D1\u05E6\u05D9\u05DD \u05E9\u05D4\u05D5\u05E2\u05DC\u05D5 \u05DC\u05E7\u05D5\u05E8\u05E1 \u05DC\u05E2\u05D9\u05D1\u05D5\u05D3 AI.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'course_id',t:'uuid',fk:true},{n:'file_name',t:'text'},
+            {n:'file_type',t:'text'},{n:'status',t:'text'},{n:'process_type',t:'text'},
+            {n:'file_url',t:'text'},{n:'uploaded_by_user_id',t:'uuid',fk:true},{n:'file_size_bytes',t:'bigint'}],
+    rels:['N:1 \u2014 courses','1:N \u2014 course_knowledge_chunk']},
+  course_knowledge_chunk:{
+    he:'\u05DE\u05E7\u05D8\u05E2\u05D9 \u05D9\u05D3\u05E2',desc:'Chunks + embeddings \u05D5\u05E7\u05D8\u05D5\u05E8\u05D9\u05D9\u05DD \u05DC\u05D7\u05D9\u05E4\u05D5\u05E9 \u05E1\u05DE\u05E0\u05D8\u05D9.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'course_id',t:'uuid',fk:true},{n:'source_id',t:'uuid',fk:true},
+            {n:'chunk_index',t:'int'},{n:'chunk_text',t:'text'},{n:'metadata',t:'jsonb'},{n:'embedding',t:'vector'}],
+    rels:['N:1 \u2014 courses','N:1 \u2014 course_sources']},
+  course_units:{
+    he:'\u05D9\u05D7\u05D9\u05D3\u05D5\u05EA \u05E7\u05D5\u05E8\u05E1',desc:'\u05E4\u05E8\u05E7\u05D9\u05DD \u05E8\u05D0\u05E9\u05D9\u05D9\u05DD \u05D1\u05EA\u05D5\u05DA \u05D4\u05E7\u05D5\u05E8\u05E1.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'course_id',t:'uuid',fk:true},{n:'unit_index',t:'int'},
+            {n:'unit_title',t:'text'},{n:'unit_description',t:'text'},{n:'created_at',t:'timestamp'}],
+    rels:['N:1 \u2014 courses','1:N \u2014 course_sub_units','1:N \u2014 unit_exams','1:N \u2014 unit_generation_locks']},
+  course_sub_units:{
+    he:'\u05EA\u05EA\u05D9-\u05D9\u05D7\u05D9\u05D3\u05D5\u05EA',desc:'\u05E0\u05D5\u05E9\u05D0\u05D9\u05DD \u05DE\u05DE\u05D5\u05E7\u05D3\u05D9\u05DD \u2014 \u05D1\u05E1\u05D9\u05E1 \u05DC\u05E1\u05D9\u05DB\u05D5\u05DE\u05D9\u05DD, \u05DB\u05E8\u05D8\u05D9\u05E1\u05D9\u05D5\u05EA \u05D5\u05D1\u05D7\u05E0\u05D9\u05DD.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'course_id',t:'uuid',fk:true},{n:'unit_id',t:'uuid',fk:true},
+            {n:'sub_unit_index',t:'text'},{n:'sub_unit_title',t:'text'},{n:'content_type',t:'text'}],
+    rels:['N:1 \u2014 courses','N:1 \u2014 course_units','1:N \u2014 summaries, flashcards, quizzes']},
+  unit_generation_locks:{
+    he:'\u05E0\u05E2\u05D9\u05DC\u05D5\u05EA \u05D9\u05E6\u05D9\u05E8\u05EA \u05D9\u05D7\u05D9\u05D3\u05D4',desc:'\u05DE\u05E0\u05D9\u05E2\u05EA \u05E8\u05D9\u05E6\u05D5\u05EA AI \u05DB\u05E4\u05D5\u05DC\u05D5\u05EA \u05DC\u05D9\u05E6\u05D9\u05E8\u05EA \u05EA\u05D5\u05DB\u05DF \u05D9\u05D7\u05D9\u05D3\u05D4.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'unit_id',t:'uuid',fk:true},{n:'course_id',t:'uuid',fk:true},
+            {n:'status',t:'text'},{n:'current_sub_unit_index',t:'int'},{n:'total_sub_units',t:'int'},
+            {n:'created_by_user_id',t:'uuid',fk:true},{n:'started_at',t:'timestamp'},{n:'completed_at',t:'timestamp'}],
+    rels:['N:1 \u2014 course_units','N:1 \u2014 courses']},
+  sub_unit_summaries:{
+    he:'\u05E1\u05D9\u05DB\u05D5\u05DE\u05D9\u05DD',desc:'\u05E1\u05D9\u05DB\u05D5\u05DD JSON \u05E9\u05E0\u05D5\u05E6\u05E8 \u05E2"\u05D9 AI \u05DC\u05DB\u05DC \u05EA\u05EA-\u05D9\u05D7\u05D9\u05D3\u05D4.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'course_id',t:'uuid',fk:true},{n:'sub_unit_id',t:'uuid',fk:true},
+            {n:'summary_json',t:'jsonb'},{n:'status',t:'text'},{n:'retry_count',t:'int'},{n:'generation_order',t:'int'}],
+    rels:['N:1 \u2014 courses','N:1 \u2014 course_sub_units']},
+  sub_unit_flashcards:{
+    he:'\u05DB\u05E8\u05D8\u05D9\u05E1\u05D9\u05D5\u05EA',desc:'Flashcards \u05DC\u05D7\u05D6\u05E8\u05D4 \u05D7\u05DB\u05DE\u05D4.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'course_id',t:'uuid',fk:true},{n:'sub_unit_id',t:'uuid',fk:true},
+            {n:'cards',t:'jsonb'},{n:'status',t:'text'},{n:'retry_count',t:'int'},{n:'generation_order',t:'int'}],
+    rels:['N:1 \u2014 course_sub_units']},
+  sub_unit_quizzes:{
+    he:'\u05D1\u05D7\u05E0\u05D9\u05DD',desc:'\u05E9\u05D0\u05DC\u05D5\u05EA \u05D0\u05DE\u05E8\u05D9\u05E7\u05D0\u05D9\u05D5\u05EA \u05DC\u05EA\u05EA-\u05D9\u05D7\u05D9\u05D3\u05D4.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'course_id',t:'uuid',fk:true},{n:'sub_unit_id',t:'uuid',fk:true},
+            {n:'questions',t:'jsonb'},{n:'status',t:'text'},{n:'retry_count',t:'int'},{n:'generation_order',t:'int'}],
+    rels:['N:1 \u2014 course_sub_units']},
+  sub_unit_chunk_classifications:{
+    he:'\u05E1\u05D9\u05D5\u05D5\u05D2\u05D9 \u05DE\u05E7\u05D8\u05E2\u05D9\u05DD',desc:'\u05DE\u05D9\u05E4\u05D5\u05D9 \u05DE\u05E7\u05D8\u05E2\u05D9 \u05D9\u05D3\u05E2 \u05DC\u05EA\u05EA-\u05D9\u05D7\u05D9\u05D3\u05D5\u05EA \u05DC\u05E4\u05D9 \u05E1\u05D5\u05D2 \u05EA\u05D5\u05DB\u05DF.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'sub_unit_id',t:'uuid',fk:true},{n:'chunk_id',t:'text'},
+            {n:'content_type',t:'text'},{n:'created_at',t:'timestamp'}],
+    rels:['N:1 \u2014 course_sub_units']},
+  unit_exams:{
+    he:'\u05DE\u05D1\u05D7\u05E0\u05D9 \u05D9\u05D7\u05D9\u05D3\u05D4',desc:'\u05DE\u05D1\u05D7\u05DF \u05DE\u05E1\u05DB\u05DD \u05D1\u05E1\u05D9\u05D5\u05DD \u05D9\u05D7\u05D9\u05D3\u05EA \u05DC\u05D9\u05DE\u05D5\u05D3.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'course_id',t:'uuid',fk:true},{n:'unit_id',t:'uuid',fk:true},
+            {n:'questions',t:'jsonb'},{n:'status',t:'text'},{n:'created_at',t:'timestamp'},{n:'updated_at',t:'timestamp'}],
+    rels:['N:1 \u2014 courses','N:1 \u2014 course_units']},
+  final_exams:{
+    he:'\u05DE\u05D1\u05D7\u05DF \u05D2\u05DE\u05E8',desc:'\u05DE\u05D1\u05D7\u05DF \u05E1\u05D5\u05E4\u05D9 \u2014 \u05E6\u05D9\u05D5\u05DF \u05D5\u05DE\u05E2\u05D1\u05E8/\u05DB\u05D9\u05E9\u05DC\u05D5\u05DF.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'course_id',t:'uuid',fk:true},{n:'user_id',t:'uuid',fk:true},
+            {n:'questions',t:'jsonb'},{n:'score',t:'int'},{n:'passed',t:'bool'},{n:'status',t:'text'},{n:'completed_at',t:'timestamp'}],
+    rels:['N:1 \u2014 courses','N:1 \u2014 profiles']},
+  final_exam_seen_questions:{
+    he:'\u05E9\u05D0\u05DC\u05D5\u05EA \u05E9\u05E0\u05E8\u05D0\u05D5 \u05D1\u05DE\u05D1\u05D7\u05DF',desc:'\u05DE\u05E0\u05D9\u05E2\u05EA \u05DB\u05E4\u05D9\u05DC\u05D5\u05EA \u2014 \u05E9\u05D0\u05DC\u05D5\u05EA \u05E9\u05DB\u05D1\u05E8 \u05D4\u05D5\u05E4\u05D9\u05E2\u05D5 \u05D1\u05DE\u05D1\u05D7\u05DF \u05D2\u05DE\u05E8.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:true},{n:'course_id',t:'uuid',fk:true},
+            {n:'question_hash',t:'text'},{n:'original_question',t:'jsonb'},{n:'created_at',t:'timestamp'}],
+    rels:['N:1 \u2014 profiles','N:1 \u2014 courses']},
+  study_plans:{
+    he:'\u05EA\u05D5\u05DB\u05E0\u05D9\u05D5\u05EA \u05DC\u05D9\u05DE\u05D5\u05D3',desc:'\u05DE\u05E2\u05D8\u05E4\u05EA \u05D4\u05D6\u05DE\u05E0\u05D9\u05DD \u05D4\u05DE\u05EA\u05D5\u05DB\u05E0\u05E0\u05EA \u05DC\u05E7\u05D5\u05E8\u05E1.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'course_id',t:'uuid',fk:true},{n:'schedule_json',t:'jsonb'},
+            {n:'created_at',t:'timestamp'},{n:'updated_at',t:'timestamp'}],
+    rels:['1:1 \u2014 courses','1:N \u2014 study_plan_items']},
+  study_plan_items:{
+    he:'\u05E4\u05E8\u05D9\u05D8\u05D9 \u05DC\u05D5\u05D6',desc:'\u05D7\u05E8\u05D9\u05E6\u05D9 \u05D6\u05DE\u05DF \u05DC\u05D7\u05D5\u05DE\u05E8 \u05D1\u05EA\u05D0\u05E8\u05D9\u05DA \u05D5\u05E9\u05E2\u05D4 \u05E1\u05E4\u05E6\u05D9\u05E4\u05D9\u05D9\u05DD.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'course_id',t:'uuid',fk:true},{n:'sub_unit_index',t:'text'},
+            {n:'title',t:'text'},{n:'scheduled_date',t:'text'},{n:'time_slot',t:'text'},
+            {n:'allocated_minutes',t:'int'},{n:'status',t:'text'},{n:'is_revision',t:'bool'}],
+    rels:['N:1 \u2014 courses']},
+  user_course_progress:{
+    he:'\u05D4\u05EA\u05E7\u05D3\u05DE\u05D5\u05EA \u05D1\u05E7\u05D5\u05E8\u05E1',desc:'\u05DE\u05D9\u05E7\u05D5\u05DD \u05E0\u05D5\u05DB\u05D7\u05D9 + \u05D6\u05DE\u05DF \u05E6\u05E4\u05D9\u05D9\u05D4 \u05D0\u05D7\u05E8\u05D5\u05DF.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:true},{n:'course_id',t:'uuid',fk:true},
+            {n:'last_unit_id',t:'uuid'},{n:'last_sub_unit_id',t:'uuid'},{n:'last_seen_at',t:'timestamp'}],
+    rels:['N:1 \u2014 courses','N:1 \u2014 profiles']},
+  user_unit_progress:{
+    he:'\u05D4\u05EA\u05E7\u05D3\u05DE\u05D5\u05EA \u05D9\u05D7\u05D9\u05D3\u05D4',desc:'\u05E6\u05D9\u05D5\u05DF \u05DE\u05D1\u05D7\u05DF \u05D9\u05D7\u05D9\u05D3\u05D4 \u05D5\u05E1\u05D8\u05D0\u05D8\u05D5\u05E1 \u05D4\u05E9\u05DC\u05DE\u05D4.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:true},{n:'course_id',t:'uuid',fk:true},
+            {n:'unit_id',t:'uuid',fk:true},{n:'exam_score',t:'int'},{n:'state',t:'text'}],
+    rels:['N:1 \u2014 courses','N:1 \u2014 course_units']},
+  user_subunit_progress:{
+    he:'\u05D4\u05EA\u05E7\u05D3\u05DE\u05D5\u05EA \u05EA\u05EA-\u05D9\u05D7\u05D9\u05D3\u05D4',desc:'\u05D1\u05D5\u05D7\u05DF \u05D4\u05D5\u05E9\u05DC\u05DD, \u05E6\u05D9\u05D5\u05DF \u05D5\u05DE\u05E6\u05D1 \u05EA\u05EA-\u05D9\u05D7\u05D9\u05D3\u05D4.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:true},{n:'course_id',t:'uuid',fk:true},
+            {n:'sub_unit_id',t:'uuid',fk:true},{n:'quiz_completed',t:'bool'},{n:'quiz_score',t:'int'},
+            {n:'flashcard_best_score',t:'int'},{n:'state',t:'text'}],
+    rels:['N:1 \u2014 courses','N:1 \u2014 course_sub_units']},
+  chat_threads:{
+    he:"\u05E9\u05E8\u05E9\u05D5\u05E8\u05D9 \u05E6'\u05D0\u05D8",desc:'\u05E9\u05E8\u05E9\u05D5\u05E8\u05D9 \u05E9\u05D9\u05D7\u05D4 \u05D1\u05D9\u05DF \u05DC\u05D5\u05DE\u05D3 \u05DC\u05E1\u05D5\u05DB\u05DF AI.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'course_id',t:'uuid',fk:true},{n:'user_id',t:'uuid',fk:true},
+            {n:'title',t:'text'},{n:'created_at',t:'timestamp'},{n:'updated_at',t:'timestamp'}],
+    rels:['N:1 \u2014 courses','N:1 \u2014 profiles','1:N \u2014 chat_messages']},
+  chat_messages:{
+    he:'\u05D4\u05D5\u05D3\u05E2\u05D5\u05EA',desc:'\u05D4\u05D5\u05D3\u05E2\u05D5\u05EA \u05D1\u05E9\u05E8\u05E9\u05D5\u05E8 \u2014 role, content \u05D5\u05DE\u05E6\u05D1.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'thread_id',t:'uuid',fk:true},{n:'role',t:'text'},
+            {n:'content',t:'text'},{n:'mode',t:'text'},{n:'created_at',t:'timestamp'}],
+    rels:['N:1 \u2014 chat_threads']},
+  user_feedback:{
+    he:'\u05DE\u05E9\u05D5\u05D1\u05D9\u05DD',desc:'\u05DE\u05E9\u05D5\u05D1\u05D9\u05DD \u05E2\u05DC \u05E7\u05D5\u05E8\u05E1 \u05D0\u05D5 \u05EA\u05EA-\u05D9\u05D7\u05D9\u05D4.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:true},{n:'course_id',t:'uuid',fk:true},
+            {n:'sub_unit_id',t:'uuid'},{n:'feedback_type',t:'text'},{n:'feedback_value',t:'jsonb'},
+            {n:'status',t:'text'},{n:'severity',t:'text'}],
+    rels:['N:1 \u2014 profiles','N:1 \u2014 courses']},
+  learning_interactions:{
+    he:'\u05D0\u05D9\u05E0\u05D8\u05E8\u05D0\u05E7\u05E6\u05D9\u05D5\u05EA',desc:'\u05EA\u05D9\u05E2\u05D5\u05D3 \u05E4\u05E2\u05D5\u05DC\u05D5\u05EA \u05DC\u05D5\u05DE\u05D3 \u05DC\u05D0\u05E0\u05DC\u05D9\u05D8\u05D9\u05E7\u05D4 \u05D5-AI.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:true},{n:'course_id',t:'uuid',fk:true},
+            {n:'sub_unit_id',t:'uuid'},{n:'interaction_type',t:'text'},{n:'content_type',t:'text'},{n:'metadata',t:'jsonb'}],
+    rels:['N:1 \u2014 profiles','N:1 \u2014 courses']},
+  error_reports:{
+    he:'\u05D3\u05D9\u05D5\u05D5\u05D7\u05D9 \u05E9\u05D2\u05D9\u05D0\u05D5\u05EA',desc:'\u05D1\u05E2\u05D9\u05D5\u05EA \u05E9\u05D3\u05D5\u05D5\u05D7\u05D5 \u05E2"\u05D9 \u05DE\u05E9\u05EA\u05DE\u05E9\u05D9\u05DD \u05E2\u05DD \u05E7\u05D5\u05E0\u05D8\u05E7\u05E1\u05D8.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'user_id',t:'uuid',fk:true},{n:'course_id',t:'uuid',fk:true},
+            {n:'issue_category',t:'text'},{n:'title',t:'text'},{n:'description',t:'text'},
+            {n:'severity',t:'text'},{n:'status',t:'text'},{n:'screenshot_url',t:'text'}],
+    rels:['N:1 \u2014 profiles','N:1 \u2014 courses']},
+  prompt_templates:{
+    he:'\u05EA\u05D1\u05E0\u05D9\u05D5\u05EA \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8',desc:'\u05D4\u05D2\u05D3\u05E8\u05D5\u05EA prompt \u05DC\u05E4\u05D9 \u05DE\u05E4\u05EA\u05D7, \u05D2\u05E8\u05E1\u05D4 \u05D5\u05DE\u05D5\u05D3\u05DC AI.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'prompt_key',t:'text'},{n:'version',t:'int'},
+            {n:'is_active',t:'bool'},{n:'model',t:'text'},{n:'temperature',t:'float'},
+            {n:'max_tokens',t:'int'},{n:'system_template',t:'text'},{n:'user_template',t:'text'},
+            {n:'created_at',t:'timestamp'},{n:'updated_at',t:'timestamp'}],
+    rels:['1:N \u2014 prompt_runs (via prompt_key)']},
+  prompt_runs:{
+    he:'\u05E8\u05D9\u05E6\u05D5\u05EA \u05E4\u05E8\u05D5\u05DE\u05E4\u05D8',desc:'\u05DC\u05D5\u05D2 \u05DB\u05DC \u05E7\u05E8\u05D9\u05D0\u05D5\u05EA AI \u2014 \u05D8\u05D5\u05E7\u05E0\u05D9\u05DD, \u05E2\u05DC\u05D5\u05EA \u05D5\u05EA\u05D5\u05E6\u05D0\u05D4.',
+    fields:[{n:'id',t:'uuid',pk:true},{n:'course_id',t:'uuid',fk:true},{n:'prompt_key',t:'text'},
+            {n:'model',t:'text'},{n:'tokens_prompt',t:'int'},{n:'tokens_completion',t:'int'},
+            {n:'cost_usd',t:'numeric'},{n:'validation_passed',t:'bool'},{n:'parsed_json',t:'jsonb'},
+            {n:'created_at',t:'timestamp'}],
+    rels:['N:1 \u2014 courses','via prompt_key \u2014 prompt_templates']},
+  system_logs:{
+    he:'\u05DC\u05D5\u05D2\u05D9 \u05DE\u05E2\u05E8\u05DB\u05EA',desc:'\u05D0\u05D9\u05E8\u05D5\u05E2\u05D9 \u05DE\u05E2\u05E8\u05DB\u05EA \u2014 INFO / WARN / ERROR.',
+    fields:[{n:'id',t:'bigint',pk:true},{n:'level',t:'text'},{n:'event_type',t:'text'},
+            {n:'source',t:'text'},{n:'entity_type',t:'text'},{n:'entity_id',t:'uuid'},
+            {n:'user_id',t:'uuid',fk:true},{n:'course_id',t:'uuid',fk:true},
+            {n:'message',t:'text'},{n:'metadata',t:'jsonb'},{n:'created_at',t:'timestamp'}],
+    rels:['N:1 \u2014 profiles (\u05D0\u05D5\u05E4\u05E6\u05D9\u05D5\u05E0\u05DC\u05D9)','N:1 \u2014 courses (\u05D0\u05D5\u05E4\u05E6\u05D9\u05D5\u05E0\u05DC\u05D9)']}
+};
+ 
+// ================================================================
+// LAYOUT
+// ================================================================
+const ROW_H=24, HDR_H=34, PAD=44, COL_GAP=90, BADGE_W=28, HDR_SIDE=16;
+const _mc=document.createElement('canvas'), _mx=_mc.getContext('2d');
+function measureMono(s,sz=10.5){_mx.font=`${sz}px "IBM Plex Mono","Courier New",monospace`;return _mx.measureText(s).width;}
+function measureBold(s,sz=11){_mx.font=`700 ${sz}px "IBM Plex Mono","Courier New",monospace`;return _mx.measureText(s).width;}
+function tableWidth(k){
+  const d=SCHEMA[k], h=4+HDR_SIDE+measureBold(k,11)+16;
+  let m=0;
+  d.fields.forEach(f=>{const r=8+BADGE_W+10+measureMono(f.n,10.5)+14+measureMono(f.t,9)+12;m=Math.max(m,r);});
+  return Math.max(200,Math.ceil(Math.max(h,m)*1.1/4)*4);
+}
+function tableHeight(k){return HDR_H+SCHEMA[k].fields.length*ROW_H;}
+ 
+const COLUMNS=[
+  ['profiles','user_roles','user_devices'],
+  ['user_preferences','user_hobbies','hobbies','courses'],
+  ['course_sources','course_knowledge_chunk','course_units','course_sub_units','unit_generation_locks','study_plans','study_plan_items'],
+  ['sub_unit_summaries','sub_unit_flashcards','sub_unit_quizzes','sub_unit_chunk_classifications','unit_exams','final_exams','final_exam_seen_questions'],
+  ['user_course_progress','user_unit_progress','user_subunit_progress','chat_threads','chat_messages','user_feedback','learning_interactions','error_reports'],
+  ['prompt_templates','prompt_runs','system_logs']
+];
+ 
+const colWidths=COLUMNS.map(col=>Math.max(...col.map(tableWidth)));
+const positions={};
+let totalW=0, totalH=0, colX=60;
+COLUMNS.forEach((col,ci)=>{
+  const cw=colWidths[ci]; let y=60;
+  col.forEach(k=>{
+    const h=tableHeight(k);
+    positions[k]={x:colX,y,w:cw,h};
+    y+=h+PAD; totalH=Math.max(totalH,y+60);
+  });
+  colX+=cw+COL_GAP; totalW=colX;
+});
+ 
+const CONNECTIONS=[
+  {from:'profiles',to:'user_roles',label:'1:N'},
+  {from:'profiles',to:'user_devices',label:'1:N'},
+  {from:'profiles',to:'user_preferences',label:'1:1'},
+  {from:'profiles',to:'user_hobbies',label:'1:N'},
+  {from:'profiles',to:'courses',label:'1:N'},
+  {from:'profiles',to:'final_exams',label:'1:N'},
+  {from:'profiles',to:'user_course_progress',label:'1:N'},
+  {from:'profiles',to:'user_unit_progress',label:'1:N'},
+  {from:'profiles',to:'user_subunit_progress',label:'1:N'},
+  {from:'profiles',to:'chat_threads',label:'1:N'},
+  {from:'profiles',to:'user_feedback',label:'1:N'},
+  {from:'profiles',to:'learning_interactions',label:'1:N'},
+  {from:'profiles',to:'error_reports',label:'1:N'},
+  {from:'profiles',to:'final_exam_seen_questions',label:'1:N'},
+  {from:'hobbies',to:'user_hobbies',label:'1:N'},
+  {from:'courses',to:'course_sources',label:'1:N'},
+  {from:'courses',to:'course_knowledge_chunk',label:'1:N'},
+  {from:'courses',to:'course_units',label:'1:N'},
+  {from:'courses',to:'course_sub_units',label:'1:N'},
+  {from:'courses',to:'unit_generation_locks',label:'1:N'},
+  {from:'courses',to:'study_plans',label:'1:1'},
+  {from:'courses',to:'study_plan_items',label:'1:N'},
+  {from:'courses',to:'unit_exams',label:'1:N'},
+  {from:'courses',to:'final_exams',label:'1:N'},
+  {from:'courses',to:'final_exam_seen_questions',label:'1:N'},
+  {from:'courses',to:'sub_unit_summaries',label:'1:N'},
+  {from:'courses',to:'user_course_progress',label:'1:N'},
+  {from:'courses',to:'user_unit_progress',label:'1:N'},
+  {from:'courses',to:'user_subunit_progress',label:'1:N'},
+  {from:'courses',to:'chat_threads',label:'1:N'},
+  {from:'courses',to:'user_feedback',label:'1:N'},
+  {from:'courses',to:'learning_interactions',label:'1:N'},
+  {from:'courses',to:'error_reports',label:'1:N'},
+  {from:'courses',to:'prompt_runs',label:'1:N'},
+  {from:'courses',to:'system_logs',label:'1:N'},
+  {from:'course_sources',to:'course_knowledge_chunk',label:'1:N'},
+  {from:'course_units',to:'course_sub_units',label:'1:N'},
+  {from:'course_units',to:'unit_exams',label:'1:N'},
+  {from:'course_units',to:'unit_generation_locks',label:'1:N'},
+  {from:'course_units',to:'user_unit_progress',label:'1:N'},
+  {from:'course_sub_units',to:'sub_unit_summaries',label:'1:N'},
+  {from:'course_sub_units',to:'sub_unit_flashcards',label:'1:N'},
+  {from:'course_sub_units',to:'sub_unit_quizzes',label:'1:N'},
+  {from:'course_sub_units',to:'sub_unit_chunk_classifications',label:'1:N'},
+  {from:'course_sub_units',to:'user_subunit_progress',label:'1:N'},
+  {from:'chat_threads',to:'chat_messages',label:'1:N'}
+];
+ 
+// ================================================================
+// SVG
+// ================================================================
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs={}){const e=document.createElementNS(NS,tag);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e;}
+function getGroupColor(key){const g=GROUPS.find(g=>g.tables.includes(key));return g?{color:g.color,dark:g.dark}:{color:'#888',dark:'#222'};}
+ 
+function renderDiagram(){
+  const svg=document.getElementById('erd-svg');
+  svg.innerHTML='';
+  const defs=el('defs');
+  GROUPS.forEach((g,i)=>{
+    const m=el('marker',{id:`arr-${i}`,markerWidth:'8',markerHeight:'8',refX:'6',refY:'3',orient:'auto'});
+    m.appendChild(el('path',{d:'M0,0 L0,6 L8,3 z',fill:g.color,opacity:'0.7'}));
+    defs.appendChild(m);
+  });
+  const fs=el('filter',{id:'shadow',x:'-5%',y:'-5%',width:'110%',height:'115%'});
+  fs.appendChild(el('feDropShadow',{dx:'0',dy:'3',stdDeviation:'5','flood-color':'rgba(0,0,0,0.5)'}));
+  defs.appendChild(fs);
+  svg.appendChild(defs);
+  svg.appendChild(el('rect',{x:0,y:0,width:totalW,height:totalH,fill:'transparent'}));
+ 
+  // connections
+  const cl=el('g',{id:'connections'});
+  CONNECTIONS.forEach(c=>{
+    const fp=positions[c.from],tp=positions[c.to];
+    if(!fp||!tp)return;
+    const {color}=getGroupColor(c.from);
+    const gi=GROUPS.findIndex(g=>g.tables.includes(c.from));
+    const fx=fp.x+fp.w, fy=fp.y+HDR_H/2, tx=tp.x, ty=tp.y+HDR_H/2, mx=(fx+tx)/2;
+    cl.appendChild(el('path',{d:`M${fx},${fy} C${mx},${fy} ${mx},${ty} ${tx},${ty}`,
+      fill:'none',stroke:color,'stroke-width':'1.2','stroke-opacity':'0.28',
+      'marker-end':`url(#arr-${gi>=0?gi:0})`}));
+    const lx=(fx+tx)/2, ly=(fy+ty)/2-5;
+    cl.appendChild(el('rect',{x:lx-12,y:ly-9,width:24,height:13,rx:'3',fill:'#0a0e1a','fill-opacity':'0.85'}));
+    const lt=el('text',{x:String(lx),y:String(ly),fill:color,'font-size':'8',
+      'font-family':'IBM Plex Mono,Courier New,monospace','text-anchor':'middle','fill-opacity':'0.75',direction:'ltr'});
+    lt.textContent=c.label;
+    cl.appendChild(lt);
+  });
+  svg.appendChild(cl);
+ 
+  // tables
+  const tl=el('g',{id:'tables'});
+  Object.entries(positions).forEach(([key,pos])=>{
+    const data=SCHEMA[key];
+    if(!data)return;
+    const {color,dark}=getGroupColor(key);
+    const {x,y,w,h}=pos;
+    const clipId=`clip-${key.replace(/_/g,'-')}`;
+    const cp=el('clipPath',{id:clipId});
+    cp.appendChild(el('rect',{x:2,y:0,width:w-4,height:h,rx:'6'}));
+    defs.appendChild(cp);
+    const g=el('g',{class:'table-group',transform:`translate(${x},${y})`,'data-key':key,direction:'ltr',style:'direction:ltr'});
+    g.style.cursor='pointer';
+    g.appendChild(el('rect',{x:3,y:4,width:w,height:h,rx:'8',fill:'rgba(0,0,0,0.4)',filter:'blur(6px)'}));
+    const body=el('rect',{x:0,y:0,width:w,height:h,rx:'8',fill:'#0d1525',stroke:color,'stroke-width':'1','stroke-opacity':'0.5'});
+    g.appendChild(body);
+    const cg=el('g',{'clip-path':`url(#${clipId})`});
+    cg.appendChild(el('rect',{x:0,y:0,width:w,height:HDR_H,rx:'8',fill:dark}));
+    cg.appendChild(el('rect',{x:0,y:HDR_H-8,width:w,height:8,fill:dark}));
+    cg.appendChild(el('rect',{x:0,y:0,width:4,height:HDR_H,fill:color}));
+    const tn=el('text',{x:String(4+HDR_SIDE),y:String(HDR_H/2+4.5),fill:color,
+      'font-size':'11','font-weight':'700','font-family':'IBM Plex Mono,Courier New,monospace',
+      'text-anchor':'start',direction:'ltr','xml:space':'preserve'});
+    tn.textContent=key;
+    cg.appendChild(tn);
+    cg.appendChild(el('line',{x1:'0',y1:String(HDR_H),x2:String(w),y2:String(HDR_H),
+      stroke:color,'stroke-width':'0.5','stroke-opacity':'0.3'}));
+    const BX=8,BW=26,BM=BX+BW/2,NX=BX+BW+7,TX=w-9,BY=ROW_H/2+4;
+    data.fields.forEach((f,i)=>{
+      const ry=HDR_H+i*ROW_H;
+      cg.appendChild(el('rect',{x:'1',y:String(ry),width:String(w-2),height:String(ROW_H),
+        fill:i%2===0?'rgba(255,255,255,0.025)':'transparent'}));
+      if(f.pk||f.fk){
+        const bc=f.pk?'rgba(245,200,66,':'rgba(155,111,247,',tc=f.pk?'#f5c842':'#9b6ff7';
+        cg.appendChild(el('rect',{x:String(BX),y:String(ry+6),width:String(BW),height:'12',rx:'3',
+          fill:`${bc}0.15)`,stroke:`${bc}0.4)`,'stroke-width':'0.5'}));
+        const bt=el('text',{x:String(BM),y:String(ry+14.5),fill:tc,'font-size':'7.5','font-weight':'800',
+          'font-family':'IBM Plex Mono,Courier New,monospace','text-anchor':'middle',direction:'ltr'});
+        bt.textContent=f.pk?'PK':'FK'; cg.appendChild(bt);
+      } else {
+        cg.appendChild(el('circle',{cx:String(BM),cy:String(ry+ROW_H/2),r:'2.5',fill:'rgba(255,255,255,0.12)'}));
+      }
+      const fn=el('text',{x:String(NX),y:String(ry+BY),fill:'#c8d0e8','font-size':'10.5',
+        'font-family':'IBM Plex Mono,Courier New,monospace','text-anchor':'start',direction:'ltr','xml:space':'preserve'});
+      fn.textContent=f.n; cg.appendChild(fn);
+      const ft=el('text',{x:String(TX),y:String(ry+BY),fill:color,'font-size':'9',
+        'font-family':'IBM Plex Mono,Courier New,monospace','text-anchor':'end','fill-opacity':'0.65',
+        direction:'ltr','xml:space':'preserve'});
+      ft.textContent=f.t; cg.appendChild(ft);
+      if(i<data.fields.length-1)
+        cg.appendChild(el('line',{x1:String(BX),y1:String(ry+ROW_H),x2:String(w-BX),y2:String(ry+ROW_H),
+          stroke:'rgba(255,255,255,0.04)','stroke-width':'0.5'}));
+    });
+    g.appendChild(cg);
+    g.addEventListener('click',()=>{
+      const grp=GROUPS.find(gr=>gr.tables.includes(key));
+      const col=grp?grp.color:'#4f7ef8';
+      const sb=document.querySelector(`.ebtn[data-k="${key}"]`);
+      if(sb) selectEntity(key,sb,col);
+    });
+    g.addEventListener('mouseenter',()=>{body.setAttribute('stroke-opacity','0.9');body.setAttribute('stroke-width','1.5');});
+    g.addEventListener('mouseleave',()=>{body.setAttribute('stroke-opacity','0.5');body.setAttribute('stroke-width','1');});
+    tl.appendChild(g);
+  });
+  svg.appendChild(tl);
+  svg.setAttribute('viewBox',`0 0 ${totalW} ${totalH}`);
+  svgNW=totalW; svgNH=totalH; vbX=0; vbY=0; vbW=totalW; vbH=totalH;
+  setTimeout(fitView,50);
+}
+ 
+// ================================================================
+// SIDEBAR
+// ================================================================
+const elList=document.getElementById('el');
+let activeBtn=null;
+GROUPS.forEach(g=>{
+  const ge=document.createElement('div'); ge.className='egroup';
+  const lb=document.createElement('div'); lb.className='egroup-lbl'; lb.textContent=g.label;
+  ge.appendChild(lb);
+  g.tables.forEach(k=>{
+    const d=SCHEMA[k]; if(!d) return;
+    const btn=document.createElement('button'); btn.className='ebtn'; btn.dataset.k=k;
+    btn.innerHTML=`<span class="edot" style="background:${g.color};box-shadow:0 0 5px ${g.color}55"></span><span style="flex:1">${k}</span><span class="ecnt">${d.fields.length}f</span>`;
+    btn.addEventListener('click',()=>selectEntity(k,btn,g.color));
+    ge.appendChild(btn);
+  });
+  elList.appendChild(ge);
+});
+document.getElementById('si').addEventListener('input',function(){
+  const q=this.value.trim().toLowerCase(); let any=false;
+  elList.querySelectorAll('.egroup').forEach(g=>{
+    let gv=false;
+    g.querySelectorAll('.ebtn').forEach(b=>{
+      const m=!q||b.dataset.k.toLowerCase().includes(q);
+      b.style.display=m?'':'none'; if(m){gv=true;any=true;}
+    });
+    g.querySelector('.egroup-lbl').style.display=gv?'':'none';
+  });
+  document.getElementById('nores').classList.toggle('hidden',any);
+});
+function selectEntity(k,btn,color){
+  if(activeBtn) activeBtn.classList.remove('active');
+  btn.classList.add('active'); activeBtn=btn;
+  const d=SCHEMA[k];
+  document.getElementById('ph-name').innerHTML=`
+    <div class="ph-ico" style="background:${color}22;border:1px solid ${color}44">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+    </div>
+    <div><div class="ph-title" style="color:${color}">${d.he}</div><div class="ph-desc">${d.desc}</div></div>`;
+  const fh=d.fields.map(f=>`<div class="frow">${f.pk?'<span class="pk-b">PK</span>':f.fk?'<span class="fk-b">FK</span>':'<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>'}<span class="fname">${f.n}</span><span class="ftype">${f.t}</span></div>`).join('');
+  const rh=d.rels.map(r=>`<div class="rtag"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>${r}</div>`).join('');
+  document.getElementById('pbody').innerHTML=`
+    <div class="psec anim"><div class="sec-lbl">\u05E9\u05D3\u05D5\u05EA \xB7 ${d.fields.length}</div><div class="flist">${fh}</div></div>
+    <div class="psec anim" style="animation-delay:.04s"><div class="sec-lbl">\u05E7\u05E9\u05E8\u05D9\u05DD \xB7 ${d.rels.length}</div><div class="rlist">${rh}</div></div>`;
+  document.getElementById('panel').classList.add('open');
+  if(window.innerWidth<=768) closeSidebar();
+}
+function closePanel(){
+  document.getElementById('panel').classList.remove('open');
+  if(activeBtn){activeBtn.classList.remove('active');activeBtn=null;}
+}
+ 
+// ================================================================
+// PAN & ZOOM
+// ================================================================
+let vbX=0,vbY=0,vbW=1000,vbH=800,svgNW=1000,svgNH=800;
+const wrap=document.getElementById('erd-wrap'), svgEl=document.getElementById('erd-svg');
+let dragging=false,dsx=0,dsy=0,dvbx=0,dvby=0;
+function setVB(){svgEl.setAttribute('viewBox',`${vbX} ${vbY} ${vbW} ${vbH}`);document.getElementById('zlbl').textContent=Math.round(svgNW/vbW*100)+'%';}
+function zoomAt(px,py,factor){
+  const r=wrap.getBoundingClientRect(),vpX=vbX+(px/r.width)*vbW,vpY=vbY+(py/r.height)*vbH;
+  const nW=Math.max(svgNW*0.05,Math.min(svgNW*8,vbW*factor)),nH=Math.max(svgNH*0.05,Math.min(svgNH*8,vbH*factor));
+  vbX=vpX-(px/r.width)*nW; vbY=vpY-(py/r.height)*nH; vbW=nW; vbH=nH; setVB();
+}
+function zi(){zoomAt(wrap.clientWidth/2,wrap.clientHeight/2,0.77);}
+function zo(){zoomAt(wrap.clientWidth/2,wrap.clientHeight/2,1.30);}
+function fitView(){
+  const r=wrap.getBoundingClientRect(); if(!r.width)return;
+  const pad=80,asp=r.width/r.height,dAsp=svgNW/svgNH;
+  if(dAsp>asp){vbW=svgNW+pad;vbH=vbW/asp;}else{vbH=svgNH+pad;vbW=vbH*asp;}
+  vbX=-(vbW-svgNW)/2; vbY=-(vbH-svgNH)/2; setVB();
+}
+function resetView(){vbX=0;vbY=0;vbW=svgNW;vbH=svgNH;setVB();}
+wrap.addEventListener('wheel',e=>{e.preventDefault();const r=wrap.getBoundingClientRect();zoomAt(e.clientX-r.left,e.clientY-r.top,e.deltaY>0?1.12:0.89);},{passive:false});
+wrap.addEventListener('mousedown',e=>{if(e.button!==0)return;dragging=true;dsx=e.clientX;dsy=e.clientY;dvbx=vbX;dvby=vbY;wrap.classList.add('dragging');});
+window.addEventListener('mousemove',e=>{if(!dragging)return;const r=wrap.getBoundingClientRect();vbX=dvbx-(e.clientX-dsx)/r.width*vbW;vbY=dvby-(e.clientY-dsy)/r.height*vbH;setVB();});
+window.addEventListener('mouseup',()=>{dragging=false;wrap.classList.remove('dragging');});
+document.addEventListener('keydown',e=>{
+  if(e.key==='+'||e.key==='=')zi(); if(e.key==='-')zo();
+  if(e.key==='0')resetView(); if(e.key==='f'||e.key==='F')fitView();
+  if(e.key==='Escape')closePanel();
+});
+new ResizeObserver(()=>{if(svgNW)setTimeout(fitView,30);}).observe(document.getElementById('main'));
+renderDiagram();
+ 
+// ================================================================
+// MOBILE
+// ================================================================
+function toggleSidebar(){const a=document.querySelector('aside');a.classList.contains('open')?closeSidebar():openSidebar();}
+function openSidebar(){document.querySelector('aside').classList.add('open');document.getElementById('sidebar-backdrop').classList.add('visible');document.body.style.overflow='hidden';}
+function closeSidebar(){document.querySelector('aside').classList.remove('open');document.getElementById('sidebar-backdrop').classList.remove('visible');document.body.style.overflow='';}
+</script>
+</body>
+</html>
+ 
