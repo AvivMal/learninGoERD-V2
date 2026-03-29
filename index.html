@@ -129,6 +129,36 @@ aside{border-left:1px solid var(--border);background:rgba(7,9,15,.72);backdrop-f
 .rtag:hover{background:var(--s2);color:var(--text)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .anim{animation:fadeUp .2s ease forwards}
+/* ── Welcome Modal ── */
+@keyframes modalIn{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+#welcome-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.65);backdrop-filter:blur(8px);padding:20px}
+#welcome-modal{position:relative;max-width:600px;width:100%;background:linear-gradient(145deg,rgba(15,18,30,.98),rgba(10,13,22,.98));
+  border:1px solid rgba(255,255,255,.13);border-radius:18px;padding:40px 44px 36px;
+  box-shadow:0 40px 100px rgba(0,0,0,.7),0 0 0 1px rgba(79,126,248,.12),inset 0 1px 0 rgba(255,255,255,.07);
+  animation:modalIn .4s cubic-bezier(.22,1,.36,1) forwards;direction:rtl}
+.wm-deco{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--purple));
+  display:flex;align-items:center;justify-content:center;margin-bottom:22px;
+  box-shadow:0 8px 28px rgba(79,126,248,.35)}
+.wm-title{font-size:1.45rem;font-weight:800;letter-spacing:-.02em;
+  background:linear-gradient(90deg,#fff 30%,rgba(255,255,255,.6));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:18px}
+.wm-divider{height:1px;background:linear-gradient(90deg,rgba(79,126,248,.5),rgba(155,111,247,.3),transparent);
+  margin-bottom:20px}
+.wm-body{font-size:.88rem;line-height:1.82;color:rgba(221,226,240,.82);display:flex;flex-direction:column;gap:12px}
+.wm-body p{margin:0}
+.wm-body strong{color:var(--text);font-weight:700}
+.wm-footer{margin-top:28px;display:flex;justify-content:flex-start}
+.wm-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--accent),var(--purple));
+  border:none;border-radius:10px;padding:11px 26px;font-family:'Heebo',sans-serif;font-size:.88rem;
+  font-weight:700;color:#fff;cursor:pointer;transition:opacity .15s,transform .1s;
+  box-shadow:0 6px 24px rgba(79,126,248,.35)}
+.wm-btn:hover{opacity:.88;transform:translateY(-1px)}
+.wm-btn:active{transform:translateY(0)}
+.wm-close{position:absolute;top:16px;left:16px;width:30px;height:30px;border-radius:7px;
+  background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;
+  justify-content:center;color:var(--muted);cursor:pointer;transition:all .12s}
+.wm-close:hover{background:var(--s3);color:var(--text)}
 </style>
 </head>
 <body>
@@ -180,6 +210,32 @@ aside{border-left:1px solid var(--border);background:rgba(7,9,15,.72);backdrop-f
 </div>
 </div>
 <div id="sidebar-backdrop" onclick="closeSidebar()"></div>
+
+<!-- Welcome Modal -->
+<div id="welcome-overlay" onclick="if(event.target===this)closeWelcome()">
+  <div id="welcome-modal">
+    <button class="wm-close" onclick="closeWelcome()" aria-label="סגור">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="wm-deco">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+    </div>
+    <div class="wm-title">מרצים יקרים</div>
+    <div class="wm-divider"></div>
+    <div class="wm-body">
+      <p>במסגרת העבודה על הפרויקט, בחרנו לקחת את המערכת צעד אחד קדימה מעבר לדרישות הפרויקט האקדמי, ולתכנן אותה כ<strong>מוצר מלא בעל פוטנציאל להמשך פיתוח עתידי</strong>.</p>
+      <p>כתוצאה מכך, תרשים ה-ERD המוצג משקף מערכת רחבה ומקיפה יותר מההיקף הממומש בפועל, וכולל גם ישויות ותהליכים שאינם חלק מהאפיון שבוצע במסגרת הפרויקט, כגון <strong>רכיבי אדמין, אנליטיקות ותהליכים מערכתיים פנימיים</strong>.</p>
+      <p>היקף מערכת מלא זה חורג מהגבולות והזמן המוקצים לפרויקט האקדמי, ולכן מימשנו בפועל את <strong>הפונקציונליות המרכזית בלבד</strong>, המתמקדת בחוויית המשתמש ובערך הליבה של המערכת.</p>
+    </div>
+    <div class="wm-footer">
+      <button class="wm-btn" onclick="closeWelcome()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        הבנתי, המשך לתרשים
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ================================================================
 // DATA
@@ -667,6 +723,8 @@ renderDiagram();
 function toggleSidebar(){const a=document.querySelector('aside');a.classList.contains('open')?closeSidebar():openSidebar();}
 function openSidebar(){document.querySelector('aside').classList.add('open');document.getElementById('sidebar-backdrop').classList.add('visible');document.body.style.overflow='hidden';}
 function closeSidebar(){document.querySelector('aside').classList.remove('open');document.getElementById('sidebar-backdrop').classList.remove('visible');document.body.style.overflow='';}
+function closeWelcome(){const o=document.getElementById('welcome-overlay');o.style.transition='opacity .25s';o.style.opacity='0';setTimeout(()=>o.remove(),260);}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const o=document.getElementById('welcome-overlay');if(o)closeWelcome();}});
 </script>
 </body>
 </html>
